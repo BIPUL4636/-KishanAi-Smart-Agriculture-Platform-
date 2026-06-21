@@ -1,0 +1,27 @@
+# ----- Python -----
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+venv/
+.venv/
+
+# ----- Environment files -----
+.env
+.env.local
+
+# ----- ML model binaries (too large for git) -----
+models/*.h5
+models/*.pkl
+models/*.pt
+models/*.pth
+models/*.onnx
+!models/.gitkeep
+
+# ----- OS files -----
+.DS_Store
+Thumbs.db
+
+# ----- IDE -----
+.vscode/
+.idea/
