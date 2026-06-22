@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 import io
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models', 'disease_model.tflite')
+MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models', 'disease_model.h5')
 
 # All 38 classes from the PlantVillage dataset
 DISEASE_CLASSES = [
@@ -185,52 +185,42 @@ def preprocess_image(image_bytes):
     return img_array
 
 
-# Module-level TFLite interpreter reference
-_interpreter = None
-_input_details = None
-_output_details = None
+# Module-level model reference
+_model = None
 
 
-# Loads the TFLite model and caches tensor details, returns True on success
+# Loads the TensorFlow model, returns None if file doesn't exist
 def load_model():
-    global _interpreter, _input_details, _output_details
-    if _interpreter is not None:
-        return True
+    global _model
+    if _model is not None:
+        return _model
 
     if os.path.exists(MODEL_PATH):
-        print(f"📦 Loading TFLite disease model from {MODEL_PATH}")
+        print(f"📦 Loading disease model from {MODEL_PATH}")
         try:
-            import tflite_runtime.interpreter as tflite
-            _interpreter = tflite.Interpreter(model_path=MODEL_PATH)
-            _interpreter.allocate_tensors()
-            _input_details = _interpreter.get_input_details()
-            _output_details = _interpreter.get_output_details()
-            print("✅ TFLite disease model loaded successfully")
-            return True
+            import tensorflow as tf
+            _model = tf.keras.models.load_model(MODEL_PATH)
+            print("✅ Disease model loaded successfully")
+            return _model
         except Exception as e:
             print(f"⚠️ Warning: Could not load disease detection model: {e}")
-            _interpreter = None
-            return False
+            return None
     else:
         print(f"⚠️ Disease model not found at {MODEL_PATH}")
-        print("   To use real predictions, convert your trained MobileNetV2 model")
-        print("   to TFLite format and save as disease_model.tflite in models/.")
-        print("   Run:  python convert_model.py")
-        return False
+        print("   To use real predictions, train a MobileNetV2 model on PlantVillage dataset")
+        print("   and save it as disease_model.h5 in the models/ directory.")
+        return None
 
 
-# Predicts disease from image bytes using the TFLite MobileNetV2 model
+# Predicts disease from image bytes using the trained MobileNetV2 model
 def predict_disease(image_bytes):
-    model_loaded = load_model()
+    model = load_model()
 
     img_array = preprocess_image(image_bytes)
 
-    if model_loaded and _interpreter is not None:
-        # Real TFLite model prediction
-        img_input = img_array.astype(np.float32)
-        _interpreter.set_tensor(_input_details[0]['index'], img_input)
-        _interpreter.invoke()
-        predictions = _interpreter.get_tensor(_output_details[0]['index'])
+    if model is not None:
+        # Real model prediction
+        predictions = model.predict(img_array, verbose=0)
         predicted_idx = int(np.argmax(predictions[0]))
         confidence = float(predictions[0][predicted_idx] * 100)
         predicted_class = DISEASE_CLASSES[predicted_idx]
