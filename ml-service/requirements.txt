@@ -3,6 +3,6 @@ flask-cors==5.0.1
 numpy>=1.23.5,<2.0
 pandas==2.2.3
 scikit-learn==1.6.1
-Pillow==11.1.0
-tensorflow-cpu==2.15.0
+Pillow>=9.0.0
+tflite-runtime==2.14.0
 gunicorn==23.0.0
