@@ -1,7 +1,7 @@
 const axios = require('axios');
 const FormData = require('form-data');
 
-const ML_SERVICE_URL = () => process.env.ML_SERVICE_URL || 'http://localhost:8000';
+const ML_SERVICE_URL = () => process.env.ML_SERVICE_URL || 'https://kishanai-smart-agriculture-platform-1.onrender.com';
 
 // Checks if the Flask ML microservice is online
 const checkHealth = async () => {

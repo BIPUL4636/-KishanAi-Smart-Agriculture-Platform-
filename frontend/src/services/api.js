@@ -10,6 +10,16 @@ const api = axios.create({
   timeout: 30000,
 });
 
+// Direct ML Service Axios client using the VITE_ML_URL environment variable
+console.log('[KishanAi] VITE_ML_URL:', import.meta.env.VITE_ML_URL);
+export const mlApi = axios.create({
+  baseURL: import.meta.env.VITE_ML_URL || 'http://localhost:8000',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 60000,
+});
+
 // Request interceptor — attaches JWT token from localStorage to every request
 api.interceptors.request.use(
   (config) => {
@@ -61,8 +71,32 @@ export const getMe = () => api.get('/auth/me');
 
 // ----- Crop Recommendation API -----
 
-// Sends soil data for crop prediction
-export const recommendCrop = (data) => api.post('/crop/recommend', data);
+// Sends soil data for crop prediction directly to the ML service (pins to VITE_ML_URL)
+export const recommendCrop = async (data) => {
+  // Call the Flask/TFLite ML service directly
+  const response = await mlApi.post('/recommend-crop', data);
+  
+  // Call the backend API in the background to save the recommendation to history
+  api.post('/crop/recommend', data).catch(() => {});
+
+  // Format the response structure so it matches exactly what the frontend pages expect
+  return {
+    data: {
+      success: true,
+      data: {
+        recommendation: {
+          result: {
+            cropName: response.data.crop || response.data.cropName || 'Unknown',
+            confidence: response.data.confidence || 0,
+            reasoning: response.data.reasoning || response.data.description || '',
+          },
+          inputs: data,
+          createdAt: new Date().toISOString(),
+        }
+      }
+    }
+  };
+};
 
 // Fetches user's crop recommendation history
 export const getCropHistory = (page = 1, limit = 10) =>
@@ -70,16 +104,50 @@ export const getCropHistory = (page = 1, limit = 10) =>
 
 // ----- Disease Detection API -----
 
-// Uploads a leaf image for disease detection (multipart form data)
-export const detectDisease = (formData) =>
+// Uploads a leaf image for disease detection directly to the ML service (pins to VITE_ML_URL)
+export const detectDisease = async (formData) => {
+  // Call the Flask/TFLite ML service directly
+  const response = await mlApi.post('/detect-disease', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 60000,
+  });
+
+  // Call the backend API in the background to save the detection to history
   api.post('/disease/detect', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
-    timeout: 60000, // Longer timeout for image processing
-  });
+    timeout: 60000,
+  }).catch(() => {});
+
+  const confidence = response.data.confidence || 0;
+  const isLowConfidence = confidence < 60;
+  
+  // Format the response structure so it matches exactly what the frontend pages expect
+  return {
+    data: {
+      success: true,
+      data: {
+        detection: {
+          result: {
+            diseaseName: isLowConfidence ? 'Unclear' : (response.data.diseaseName || response.data.disease || 'Unknown'),
+            confidence,
+            symptoms: isLowConfidence ? 'Image unclear — could not reliably identify the disease.' : (response.data.symptoms || ''),
+            treatment: isLowConfidence ? 'Please retake the photo in good natural lighting with the affected leaf area clearly visible.' : (response.data.treatment || ''),
+            isHealthy: response.data.isHealthy || false,
+          },
+          createdAt: new Date().toISOString(),
+        },
+        isLowConfidence,
+      }
+    }
+  };
+};
 
 // Fetches user's disease detection history
 export const getDiseaseHistory = (page = 1, limit = 10) =>
   api.get(`/disease/history?page=${page}&limit=${limit}`);
+
+// Checks the health of the ML service directly
+export const checkMLHealth = () => mlApi.get('/health');
 
 // ----- Fertilizer API -----
 
