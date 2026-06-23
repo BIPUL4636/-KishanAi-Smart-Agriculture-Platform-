@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 import io
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models', 'disease_model.h5')
+MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models', 'disease_model.tflite')
 
 # All 38 classes from the PlantVillage dataset
 DISEASE_CLASSES = [
@@ -189,7 +189,7 @@ def preprocess_image(image_bytes):
 _model = None
 
 
-# Loads the TensorFlow model, returns None if file doesn't exist
+# Loads the TFLite model, returns None if file doesn't exist
 def load_model():
     global _model
     if _model is not None:
@@ -198,17 +198,26 @@ def load_model():
     if os.path.exists(MODEL_PATH):
         print(f"📦 Loading disease model from {MODEL_PATH}")
         try:
-            import tensorflow as tf
-            _model = tf.keras.models.load_model(MODEL_PATH)
-            print("✅ Disease model loaded successfully")
+            try:
+                import tflite_runtime.interpreter as tflite
+            except ImportError:
+                try:
+                    import ai_edge_litert.interpreter as tflite
+                except ImportError:
+                    import tensorflow.lite as tflite
+            
+            interpreter = tflite.Interpreter(model_path=MODEL_PATH)
+            interpreter.allocate_tensors()
+            _model = interpreter
+            print("✅ Disease model loaded successfully (TFLite)")
             return _model
         except Exception as e:
             print(f"⚠️ Warning: Could not load disease detection model: {e}")
             return None
     else:
         print(f"⚠️ Disease model not found at {MODEL_PATH}")
-        print("   To use real predictions, train a MobileNetV2 model on PlantVillage dataset")
-        print("   and save it as disease_model.h5 in the models/ directory.")
+        print("   To use real predictions, convert your .h5 model to .tflite using convert_model.py")
+        print("   and save it as disease_model.tflite in the models/ directory.")
         return None
 
 
@@ -219,8 +228,12 @@ def predict_disease(image_bytes):
     img_array = preprocess_image(image_bytes)
 
     if model is not None:
-        # Real model prediction
-        predictions = model.predict(img_array, verbose=0)
+        # Real model prediction using TFLite interpreter
+        input_details = model.get_input_details()
+        output_details = model.get_output_details()
+        model.set_tensor(input_details[0]['index'], img_array)
+        model.invoke()
+        predictions = model.get_tensor(output_details[0]['index'])
         predicted_idx = int(np.argmax(predictions[0]))
         confidence = float(predictions[0][predicted_idx] * 100)
         predicted_class = DISEASE_CLASSES[predicted_idx]
