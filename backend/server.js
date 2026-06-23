@@ -23,7 +23,10 @@ app.use(helmet());
 // Enables CORS for frontend requests (Vite dev server on port 5173)
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: [
+      'http://localhost:5173',
+      'https://kishan-ai-smart-agriculture-platfor.vercel.app'
+    ],
     credentials: true,
   })
 );
