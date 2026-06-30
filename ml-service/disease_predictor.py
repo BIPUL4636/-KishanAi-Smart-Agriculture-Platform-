@@ -175,12 +175,14 @@ def format_disease_name(class_name):
     return f"{plant} — {condition}"
 
 
-# Preprocesses the uploaded image for MobileNetV2 inference (224x224, normalized)
+# Preprocesses the uploaded image for MobileNetV2 inference (224x224, normalized to [-1, 1])
 def preprocess_image(image_bytes):
     img = Image.open(io.BytesIO(image_bytes))
     img = img.convert('RGB')
     img = img.resize((224, 224))
-    img_array = np.array(img, dtype=np.float32) / 255.0
+    img_array = np.array(img, dtype=np.float32)
+    # Scale pixels to [-1, 1] range as required by MobileNetV2 pre-processing
+    img_array = (img_array / 127.5) - 1.0
     img_array = np.expand_dims(img_array, axis=0)
     return img_array
 
@@ -237,10 +239,28 @@ def predict_disease(image_bytes):
         predicted_idx = int(np.argmax(predictions[0]))
         confidence = float(predictions[0][predicted_idx] * 100)
         predicted_class = DISEASE_CLASSES[predicted_idx]
+
+        # Task 4: Detailed ML logging
+        print("\n" + "=" * 60)
+        print("🔮 [ML Inference Log]")
+        print("=" * 60)
+        print(f"  - Preprocessed image shape: {img_array.shape}")
+        print(f"  - Predicted class index:    {predicted_idx}")
+        print(f"  - Predicted class name:     {predicted_class}")
+        print(f"  - Confidence score:         {confidence:.2f}%")
+        print("\n📊 Top 5 Class Probabilities:")
+        top_5_indices = np.argsort(predictions[0])[-5:][::-1]
+        for idx in top_5_indices:
+            print(f"    * {DISEASE_CLASSES[idx]:<50}: {predictions[0][idx] * 100:.2f}%")
+        print("=" * 60 + "\n")
     else:
         # Demo mode — use image analysis heuristics for a reasonable response
         # Analyze dominant colors to make an educated guess
         predicted_class, confidence = _demo_prediction(img_array)
+        print("\n🔮 [ML Inference Log — Demo Heuristic Mode]")
+        print(f"  - Preprocessed image shape: {img_array.shape}")
+        print(f"  - Heuristic prediction:     {predicted_class}")
+        print(f"  - Heuristic confidence:     {confidence:.2f}%\n")
 
 
     # Check if the prediction is a healthy class

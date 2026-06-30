@@ -78,23 +78,21 @@ export default function Register() {
       {/* Left Hero Panel */}
       <div className="auth-hero">
         <div className="auth-hero-content">
-          <div className="text-6xl mb-6">🌾</div>
-          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem' }}>
-            <span style={{ background: 'linear-gradient(135deg, #41C0F2, #7dd3fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              KishanAi
-            </span>
+          <div className="auth-hero-emoji">🌾</div>
+          <h1 className="auth-hero-title">
+            <span className="gradient-text">KishanAi</span>
           </h1>
-          <p style={{ fontSize: '1.1rem', opacity: 0.7, maxWidth: '340px', margin: '0 auto', lineHeight: 1.6 }}>
+          <p className="auth-hero-desc">
             Join thousands of Indian farmers using AI to grow smarter, healthier crops
           </p>
-          <div style={{ marginTop: '2.5rem', display: 'grid', gap: '0.75rem', maxWidth: '280px', margin: '2.5rem auto 0' }}>
+          <div className="auth-hero-checklist">
             {[
               '✅ Free crop recommendations',
               '✅ Disease detection from leaf photos',
               '✅ Live mandi market prices',
               '✅ AI-powered farming assistant',
             ].map((item) => (
-              <span key={item} style={{ fontSize: '0.85rem', opacity: 0.6, textAlign: 'left' }}>{item}</span>
+              <span key={item}>{item}</span>
             ))}
           </div>
         </div>
@@ -103,13 +101,9 @@ export default function Register() {
       {/* Right Form Panel */}
       <div className="auth-form-side">
         <div className="auth-form-container fade-in">
-          <div style={{ marginBottom: '1.75rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-              Create your account 🌱
-            </h2>
-            <p className="text-textMuted">
-              Start your smart farming journey today
-            </p>
+          <div className="auth-form-heading">
+            <h2>Create your account 🌱</h2>
+            <p>Start your smart farming journey today</p>
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -183,10 +177,9 @@ export default function Register() {
               <select
                 id="reg-state"
                 name="state"
-                className={`input ${errors.state ? 'input-error' : ''}`}
+                className={`input cursor-pointer ${errors.state ? 'input-error' : ''}`}
                 value={formData.state}
                 onChange={handleChange}
-                style={{ cursor: 'pointer' }}
               >
                 <option value="">Select your state</option>
                 {INDIAN_STATES.map((s) => (
@@ -199,13 +192,12 @@ export default function Register() {
             {/* Submit */}
             <button
               type="submit"
-              className="btn-primary"
+              className="btn-primary btn-full mt-sm"
               disabled={isSubmitting}
-              style={{ width: '100%', marginTop: '0.5rem', padding: '0.85rem' }}
             >
               {isSubmitting ? (
                 <>
-                  <div className="spinner" style={{ width: '1.1rem', height: '1.1rem', borderWidth: '2px' }}></div>
+                  <div className="spinner spinner-btn"></div>
                   Creating account...
                 </>
               ) : (
@@ -215,11 +207,9 @@ export default function Register() {
           </form>
 
           {/* Login Link */}
-          <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', color: 'var(--color-textMuted)' }}>
+          <p className="auth-link-row">
             Already have an account?{' '}
-            <Link to="/login" style={{ color: 'var(--color-kisanBlue)', fontWeight: 600, textDecoration: 'none' }}>
-              Log in
-            </Link>
+            <Link to="/login">Log in</Link>
           </p>
         </div>
       </div>

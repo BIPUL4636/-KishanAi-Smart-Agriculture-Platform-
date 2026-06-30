@@ -35,8 +35,8 @@ function PublicRoute({ children }) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-bgMain">
-        <div className="spinner" style={{ width: '2.5rem', height: '2.5rem' }}></div>
+      <div className="loading-page">
+        <div className="spinner spinner-lg"></div>
       </div>
     );
   }

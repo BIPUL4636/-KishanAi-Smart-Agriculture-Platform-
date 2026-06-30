@@ -56,6 +56,17 @@ export default function Weather() {
     return tips;
   };
 
+  // Weather emoji helper
+  const getWeatherEmoji = (icon) => {
+    if (!icon) return '🌤️';
+    const map = {
+      '01d': '☀️', '01n': '🌙', '02d': '⛅', '02n': '☁️', '03d': '☁️', '03n': '☁️',
+      '04d': '☁️', '04n': '☁️', '09d': '🌧️', '09n': '🌧️', '10d': '🌦️', '10n': '🌧️',
+      '11d': '⛈️', '11n': '⛈️', '13d': '🌨️', '13n': '🌨️', '50d': '🌫️', '50n': '🌫️',
+    };
+    return map[icon] || '🌤️';
+  };
+
   return (
     <div className="page-container fade-in">
       <div className="page-header">
@@ -64,9 +75,9 @@ export default function Weather() {
       </div>
 
       {/* City Search */}
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <form onSubmit={handleSearch} style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-end' }}>
-          <div style={{ flex: 1 }}>
+      <div className="card mb-lg">
+        <form onSubmit={handleSearch} className="weather-search-form">
+          <div className="weather-search-input-wrapper">
             <label className="label" htmlFor="weather-city">Search by city</label>
             <input
               id="weather-city"
@@ -79,16 +90,15 @@ export default function Weather() {
           </div>
           <button type="submit" className="btn-primary" disabled={isSearching} id="weather-search-btn">
             {isSearching ? (
-              <div className="spinner" style={{ width: '1rem', height: '1rem', borderWidth: '2px' }}></div>
+              <div className="spinner spinner-sm"></div>
             ) : (
               '🔍 Search'
             )}
           </button>
           <button
             type="button"
-            className="btn-secondary"
+            className="btn-secondary whitespace-nowrap"
             onClick={() => { setShowDefault(true); setSearchedWeather(null); setCity(''); }}
-            style={{ whiteSpace: 'nowrap' }}
           >
             📍 My Location
           </button>
@@ -101,19 +111,19 @@ export default function Weather() {
       ) : searchedWeather ? (
         <div className="fade-in">
           {/* Render weather data manually */}
-          <div className="card" style={{ marginBottom: '1.5rem' }}>
+          <div className="card mb-lg">
             <div className="weather-main">
-              <span style={{ fontSize: '4rem' }}>
-                {searchedWeather.current?.icon ? '🌤️' : '☁️'}
+              <span className="weather-emoji-lg">
+                {getWeatherEmoji(searchedWeather.current?.icon)}
               </span>
               <div>
                 <div className="weather-temp">
                   {Math.round(searchedWeather.current?.temp || searchedWeather.current?.temperature || 0)}°C
                 </div>
-                <div style={{ color: 'var(--color-textMuted)', fontSize: '0.95rem', marginTop: '0.3rem', textTransform: 'capitalize' }}>
+                <div className="weather-desc">
                   {searchedWeather.current?.description || 'N/A'}
                 </div>
-                <div style={{ color: 'var(--color-textMuted)', fontSize: '0.85rem', marginTop: '0.15rem' }}>
+                <div className="weather-location">
                   📍 {searchedWeather.current?.city || searchedWeather.current?.name || city}
                 </div>
               </div>
@@ -126,13 +136,10 @@ export default function Weather() {
                 { label: 'Wind', value: `${searchedWeather.current?.windSpeed || searchedWeather.current?.wind_speed || 0} m/s`, icon: '💨' },
                 { label: 'Pressure', value: `${searchedWeather.current?.pressure || 0} hPa`, icon: '📊' },
               ].map((d) => (
-                <div key={d.label} style={{
-                  padding: '0.75rem', borderRadius: '0.75rem',
-                  background: 'var(--color-bgMain)', textAlign: 'center',
-                }}>
-                  <div style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>{d.icon}</div>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.15rem' }}>{d.value}</div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--color-textMuted)' }}>{d.label}</div>
+                <div key={d.label} className="weather-detail-item">
+                  <div className="weather-detail-icon">{d.icon}</div>
+                  <div className="weather-detail-value">{d.value}</div>
+                  <div className="weather-detail-label">{d.label}</div>
                 </div>
               ))}
             </div>
@@ -140,21 +147,21 @@ export default function Weather() {
 
           {/* Forecast */}
           {searchedWeather.forecast?.length > 0 && (
-            <div className="card" style={{ marginBottom: '1.5rem' }}>
-              <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>
-                📅 5-Day Forecast
-              </h3>
+            <div className="card mb-lg">
+              <h3 className="card-section-title-flex">📅 5-Day Forecast</h3>
               <div className="weather-forecast">
                 {searchedWeather.forecast.slice(0, 5).map((day, i) => (
                   <div key={i} className="forecast-day">
-                    <div style={{ fontSize: '0.75rem', color: 'var(--color-textMuted)', marginBottom: '0.3rem' }}>
+                    <div className="forecast-day-label">
                       {day.day || new Date(day.date).toLocaleDateString('en', { weekday: 'short' })}
                     </div>
-                    <div style={{ fontSize: '1.5rem', marginBottom: '0.3rem' }}>🌤️</div>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+                    <div className="forecast-day-emoji">
+                      {getWeatherEmoji(day.icon)}
+                    </div>
+                    <div className="forecast-day-high">
                       {Math.round(day.tempMax || day.temp_max || day.temp || 0)}°
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--color-textMuted)' }}>
+                    <div className="forecast-day-low">
                       {Math.round(day.tempMin || day.temp_min || 0)}°
                     </div>
                   </div>
@@ -164,15 +171,11 @@ export default function Weather() {
           )}
 
           {/* Farming Tips */}
-          <div className="card" style={{ borderLeft: '4px solid var(--color-accent)' }}>
-            <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1rem', fontWeight: 600, marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              🌾 Farming Advisory
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div className="card advisory-card">
+            <h3 className="card-section-title-flex">🌾 Farming Advisory</h3>
+            <div className="advisory-tips">
               {getFarmingTips(searchedWeather).map((tip, i) => (
-                <p key={i} style={{ fontSize: '0.88rem', color: 'var(--color-textMuted)', lineHeight: 1.6 }}>
-                  {tip}
-                </p>
+                <p key={i} className="advisory-tip">{tip}</p>
               ))}
             </div>
           </div>

@@ -55,15 +55,13 @@ export default function CropForm({ onSubmit, isLoading }) {
 
   return (
     <form onSubmit={handleSubmit} id="crop-form">
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
+      <div className="crop-form-grid">
         {FIELDS.map((field) => (
-          <div key={field.name} className="form-group" style={{ marginBottom: 0 }}>
+          <div key={field.name} className="form-group form-group-flush">
             <label className="label" htmlFor={`crop-${field.name}`}>
               {field.label}
               {field.unit && (
-                <span style={{ fontWeight: 400, color: 'var(--color-textMuted)', fontSize: '0.75rem', marginLeft: '0.3rem' }}>
-                  ({field.unit})
-                </span>
+                <span className="label-unit">({field.unit})</span>
               )}
             </label>
             <input
@@ -80,17 +78,17 @@ export default function CropForm({ onSubmit, isLoading }) {
             {errors[field.name] ? (
               <p className="form-error">{errors[field.name]}</p>
             ) : (
-              <p style={{ fontSize: '0.72rem', color: 'var(--color-textMuted)', marginTop: '0.2rem' }}>{field.tip}</p>
+              <p className="field-tip">{field.tip}</p>
             )}
           </div>
         ))}
       </div>
 
-      <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
+      <div className="crop-form-actions">
         <button type="submit" className="btn-primary" disabled={isLoading} id="crop-submit-btn">
           {isLoading ? (
             <>
-              <div className="spinner" style={{ width: '1rem', height: '1rem', borderWidth: '2px' }}></div>
+              <div className="spinner spinner-sm"></div>
               Analyzing soil...
             </>
           ) : (

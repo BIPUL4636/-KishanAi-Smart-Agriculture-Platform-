@@ -4,12 +4,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload) return null;
   return (
-    <div style={{
-      background: 'white', padding: '0.75rem 1rem', borderRadius: '0.5rem',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.12)', border: '1px solid #e5e7eb',
-      fontSize: '0.82rem',
-    }}>
-      <p style={{ fontWeight: 600, marginBottom: '0.35rem' }}>{label}</p>
+    <div className="glass-card" style={{ padding: '0.75rem 1rem', fontSize: '0.82rem' }}>
+      <p className="td-bold mb-sm">{label}</p>
       {payload.map((entry) => (
         <p key={entry.name} style={{ color: entry.color, marginBottom: '0.15rem' }}>
           {entry.name}: ₹{entry.value}
@@ -34,8 +30,8 @@ export default function PriceChart({ data }) {
   }));
 
   return (
-    <div className="card fade-in" style={{ marginTop: '1.5rem' }}>
-      <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    <div className="card fade-in mt-lg">
+      <h3 className="card-section-title-flex">
         📈 Price Comparison Chart
       </h3>
       <ResponsiveContainer width="100%" height={320}>

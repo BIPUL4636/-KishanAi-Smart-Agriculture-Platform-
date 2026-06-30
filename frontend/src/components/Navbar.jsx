@@ -1,3 +1,4 @@
+import { useState, useEffect, useCallback } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -43,6 +44,14 @@ const LogoutIcon = () => (
   </svg>
 );
 
+const HamburgerIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="3" y1="6" x2="21" y2="6" />
+    <line x1="3" y1="12" x2="21" y2="12" />
+    <line x1="3" y1="18" x2="21" y2="18" />
+  </svg>
+);
+
 // Navigation items configuration
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: <DashboardIcon /> },
@@ -52,21 +61,136 @@ const navItems = [
   { to: '/market', label: 'Market', icon: <MarketIcon /> },
 ];
 
-// Sidebar nav on desktop + bottom tab bar on mobile
+// Sidebar nav on desktop (1024px+), hamburger drawer + top header on mobile/tablet
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Logs the user out and redirects to login page
   const handleLogout = () => {
     logout();
     navigate('/login');
+    setDrawerOpen(false);
   };
+
+  // Close drawer when navigating
+  const handleNavClick = () => {
+    setDrawerOpen(false);
+  };
+
+  // Close drawer on Escape key
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Escape' && drawerOpen) {
+      setDrawerOpen(false);
+    }
+  }, [drawerOpen]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
+  // Prevent body scroll when drawer is open
+  useEffect(() => {
+    if (drawerOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [drawerOpen]);
+
+  // Shared nav link list renderer
+  const renderNavLinks = (onClick) =>
+    navItems.map((item) => (
+      <NavLink
+        key={item.to}
+        to={item.to}
+        className={({ isActive }) =>
+          `sidebar-link ${isActive ? 'active' : ''}`
+        }
+        onClick={onClick}
+      >
+        {item.icon}
+        <span>{item.label}</span>
+      </NavLink>
+    ));
+
+  // Shared user footer renderer
+  const renderUserFooter = () => (
+    <div className="sidebar-footer">
+      <div className="sidebar-user">
+        <div className="sidebar-avatar">
+          {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+        </div>
+        <div className="sidebar-user-info">
+          <p className="sidebar-user-name">{user?.name || 'Farmer'}</p>
+          <p className="sidebar-user-email">{user?.email || ''}</p>
+        </div>
+      </div>
+      <button onClick={handleLogout} className="sidebar-logout" aria-label="Log out">
+        <LogoutIcon />
+        <span>Logout</span>
+      </button>
+    </div>
+  );
 
   return (
     <>
-      {/* ---- Desktop Sidebar ---- */}
-      <aside className="sidebar">
+      {/* ---- Mobile Top Header (< 1024px) ---- */}
+      <header className="mobile-header">
+        <div className="mobile-header-brand">
+          <span className="mobile-header-logo">🌾</span>
+          <span className="mobile-header-title">KishanAi</span>
+        </div>
+        <button
+          className="hamburger-btn"
+          onClick={() => setDrawerOpen(true)}
+          aria-label="Open navigation menu"
+          aria-expanded={drawerOpen}
+        >
+          <HamburgerIcon />
+        </button>
+      </header>
+
+      {/* ---- Mobile Drawer Overlay ---- */}
+      <div
+        className={`drawer-overlay ${drawerOpen ? 'open' : ''}`}
+        onClick={() => setDrawerOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* ---- Mobile Slide-out Drawer ---- */}
+      <nav
+        className={`mobile-drawer ${drawerOpen ? 'open' : ''}`}
+        aria-label="Main navigation"
+        role="navigation"
+      >
+        {/* Brand + close */}
+        <div className="sidebar-brand">
+          <span className="sidebar-logo">🌾</span>
+          <h1 className="sidebar-title">KishanAi</h1>
+        </div>
+        <button
+          className="drawer-close-btn"
+          onClick={() => setDrawerOpen(false)}
+          aria-label="Close navigation menu"
+        >
+          ✕
+        </button>
+
+        {/* Navigation links */}
+        <div className="sidebar-nav">
+          {renderNavLinks(handleNavClick)}
+        </div>
+
+        {/* User profile + logout */}
+        {renderUserFooter()}
+      </nav>
+
+      {/* ---- Desktop Sidebar (≥ 1024px) ---- */}
+      <aside className="sidebar" aria-label="Main navigation">
         {/* Brand logo */}
         <div className="sidebar-brand">
           <span className="sidebar-logo">🌾</span>
@@ -75,53 +199,12 @@ export default function Navbar() {
 
         {/* Navigation links */}
         <nav className="sidebar-nav">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `sidebar-link ${isActive ? 'active' : ''}`
-              }
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
+          {renderNavLinks(null)}
         </nav>
 
         {/* User profile + logout */}
-        <div className="sidebar-footer">
-          <div className="sidebar-user">
-            <div className="sidebar-avatar">
-              {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-            </div>
-            <div className="sidebar-user-info">
-              <p className="sidebar-user-name">{user?.name || 'Farmer'}</p>
-              <p className="sidebar-user-email">{user?.email || ''}</p>
-            </div>
-          </div>
-          <button onClick={handleLogout} className="sidebar-logout">
-            <LogoutIcon />
-            <span>Logout</span>
-          </button>
-        </div>
+        {renderUserFooter()}
       </aside>
-
-      {/* ---- Mobile Bottom Navigation ---- */}
-      <nav className="bottom-nav">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              `bottom-nav-item ${isActive ? 'active' : ''}`
-            }
-          >
-            {item.icon}
-            <span>{item.label}</span>
-          </NavLink>
-        ))}
-      </nav>
     </>
   );
 }

@@ -70,17 +70,14 @@ export default function AgriBot() {
           {/* Header */}
           <div className="agribot-header">
             <div className="agribot-header-avatar">🤖</div>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontWeight: 600, fontSize: '0.9rem' }}>AgriBot</p>
-              <p style={{ fontSize: '0.7rem', opacity: 0.6 }}>AI Farming Assistant</p>
+            <div className="agribot-header-info">
+              <p className="agribot-header-name">AgriBot</p>
+              <p className="agribot-header-subtitle">AI Farming Assistant</p>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              style={{
-                background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white',
-                width: '1.75rem', height: '1.75rem', borderRadius: '50%', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem',
-              }}
+              className="agribot-close-btn"
+              aria-label="Close chat"
             >
               ✕
             </button>
@@ -135,6 +132,7 @@ export default function AgriBot() {
               onClick={() => sendMessage()}
               disabled={!input.trim() || isTyping}
               id="agribot-send"
+              aria-label="Send message"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13" />
@@ -151,6 +149,7 @@ export default function AgriBot() {
         onClick={() => setIsOpen(!isOpen)}
         id="agribot-fab"
         title="Chat with AgriBot"
+        aria-label="Chat with AgriBot"
       >
         {isOpen ? '✕' : '🤖'}
       </button>

@@ -80,49 +80,35 @@ export default function CropRecommendation() {
       </div>
 
       {/* Soil Data Form */}
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.05rem', fontWeight: 600, marginBottom: '1.25rem' }}>
-          Soil & Climate Data
-        </h3>
+      <div className="card mb-lg">
+        <h3 className="card-section-title">Soil & Climate Data</h3>
         <CropForm onSubmit={handleSubmit} isLoading={isLoading} />
       </div>
 
       {/* Result Card */}
       {result && (
-        <div className="result-card fade-in" style={{ marginBottom: '1.5rem' }}>
-          <div className="result-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.05rem', fontWeight: 600 }}>
-              🎯 Recommendation Result
-            </h3>
-            <span className="badge badge-success" style={{ fontSize: '0.8rem' }}>
-              AI Predicted
-            </span>
+        <div className="result-card fade-in mb-lg">
+          <div className="result-card-header">
+            <h3>🎯 Recommendation Result</h3>
+            <span className="badge badge-success">AI Predicted</span>
           </div>
           <div className="result-card-body">
             {/* Crop Name */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-              <div style={{
-                width: '3.5rem', height: '3.5rem', borderRadius: '0.75rem',
-                background: 'var(--color-kisanLight)', display: 'flex',
-                alignItems: 'center', justifyContent: 'center', fontSize: '1.75rem',
-              }}>
+            <div className="result-name-row">
+              <div className="result-icon-box" style={{ background: 'var(--color-kisanLight)' }}>
                 🌾
               </div>
               <div>
-                <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.25rem', fontWeight: 700 }}>
-                  {result.result.cropName}
-                </h4>
-                <p style={{ fontSize: '0.82rem', color: 'var(--color-textMuted)' }}>
-                  Recommended crop for your soil conditions
-                </p>
+                <h4 className="result-name-title">{result.result.cropName}</h4>
+                <p className="result-name-subtitle">Recommended crop for your soil conditions</p>
               </div>
             </div>
 
             {/* Confidence Bar */}
-            <div style={{ marginBottom: '1.25rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                <span style={{ fontSize: '0.82rem', fontWeight: 500 }}>Confidence</span>
-                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: getConfidenceColor(result.result.confidence) }}>
+            <div className="confidence-section">
+              <div className="confidence-labels">
+                <span className="confidence-label">Confidence</span>
+                <span className="confidence-value" style={{ color: getConfidenceColor(result.result.confidence) }}>
                   {result.result.confidence}%
                 </span>
               </div>
@@ -139,13 +125,8 @@ export default function CropRecommendation() {
 
             {/* Reasoning */}
             {result.result.reasoning && (
-              <div style={{
-                padding: '1rem', background: 'var(--color-bgMain)',
-                borderRadius: '0.625rem', borderLeft: '3px solid var(--color-kisanBlue)',
-              }}>
-                <p style={{ fontSize: '0.85rem', color: 'var(--color-textMuted)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
-                  {result.result.reasoning}
-                </p>
+              <div className="info-box">
+                <p>{result.result.reasoning}</p>
               </div>
             )}
           </div>
@@ -156,12 +137,10 @@ export default function CropRecommendation() {
       {fertilizerData && <FertilizerCard data={fertilizerData} />}
 
       {/* Recommendation History */}
-      <div className="card" style={{ marginTop: '2rem' }}>
-        <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.05rem', fontWeight: 600, marginBottom: '1rem' }}>
-          📋 Recommendation History
-        </h3>
+      <div className="card mt-xl">
+        <h3 className="card-section-title">📋 Recommendation History</h3>
         {history.length === 0 ? (
-          <div className="empty-state" style={{ padding: '2rem' }}>
+          <div className="empty-state">
             <p>No recommendations yet — fill the soil form above to get started</p>
           </div>
         ) : (
@@ -180,15 +159,15 @@ export default function CropRecommendation() {
                 <tbody>
                   {history.map((rec) => (
                     <tr key={rec._id}>
-                      <td style={{ fontWeight: 600 }}>{rec.result?.cropName || 'N/A'}</td>
+                      <td className="td-bold">{rec.result?.cropName || 'N/A'}</td>
                       <td>
                         <span className="badge badge-success">{rec.result?.confidence || 0}%</span>
                       </td>
-                      <td style={{ fontSize: '0.82rem' }}>
+                      <td className="td-small">
                         {rec.inputs?.N}/{rec.inputs?.P}/{rec.inputs?.K}
                       </td>
                       <td>{rec.inputs?.pH || 'N/A'}</td>
-                      <td style={{ fontSize: '0.82rem', color: 'var(--color-textMuted)' }}>
+                      <td className="td-muted">
                         {new Date(rec.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>
                     </tr>
@@ -199,23 +178,21 @@ export default function CropRecommendation() {
 
             {/* Pagination */}
             {historyTotal > 1 && (
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1rem' }}>
+              <div className="pagination">
                 <button
-                  className="btn-secondary"
+                  className="btn-secondary btn-sm"
                   onClick={() => setHistoryPage((p) => Math.max(1, p - 1))}
                   disabled={historyPage <= 1}
-                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
                 >
                   ← Prev
                 </button>
-                <span style={{ fontSize: '0.82rem', color: 'var(--color-textMuted)', display: 'flex', alignItems: 'center' }}>
+                <span className="pagination-info">
                   Page {historyPage} of {historyTotal}
                 </span>
                 <button
-                  className="btn-secondary"
+                  className="btn-secondary btn-sm"
                   onClick={() => setHistoryPage((p) => Math.min(historyTotal, p + 1))}
                   disabled={historyPage >= historyTotal}
-                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
                 >
                   Next →
                 </button>

@@ -77,17 +77,16 @@ export default function MarketPrices() {
       </div>
 
       {/* Filters */}
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+      <div className="card mb-lg">
+        <div className="market-filters">
           {/* State Selector */}
-          <div style={{ flex: 1, minWidth: '180px' }}>
+          <div className="market-filter-item">
             <label className="label" htmlFor="market-state">State</label>
             <select
               id="market-state"
-              className="input"
+              className="input cursor-pointer"
               value={selectedState}
               onChange={(e) => setSelectedState(e.target.value)}
-              style={{ cursor: 'pointer' }}
             >
               <option value="">Select State</option>
               {states.map((s) => (
@@ -97,14 +96,13 @@ export default function MarketPrices() {
           </div>
 
           {/* Commodity Selector */}
-          <div style={{ flex: 1, minWidth: '180px' }}>
+          <div className="market-filter-item">
             <label className="label" htmlFor="market-commodity">Commodity</label>
             <select
               id="market-commodity"
-              className="input"
+              className="input cursor-pointer"
               value={selectedCommodity}
               onChange={(e) => setSelectedCommodity(e.target.value)}
-              style={{ cursor: 'pointer' }}
             >
               <option value="">Select Commodity</option>
               {commodities.map((c) => (
@@ -115,15 +113,14 @@ export default function MarketPrices() {
 
           {/* Search Button */}
           <button
-            className="btn-primary"
+            className="btn-primary whitespace-nowrap"
             onClick={handleSearch}
             disabled={isLoading}
             id="market-search-btn"
-            style={{ whiteSpace: 'nowrap' }}
           >
             {isLoading ? (
               <>
-                <div className="spinner" style={{ width: '1rem', height: '1rem', borderWidth: '2px' }}></div>
+                <div className="spinner spinner-sm"></div>
                 Fetching...
               </>
             ) : (
@@ -134,7 +131,7 @@ export default function MarketPrices() {
 
         {/* Last Updated */}
         {lastUpdated && (
-          <p style={{ fontSize: '0.75rem', color: 'var(--color-textMuted)', marginTop: '0.75rem' }}>
+          <p className="market-last-updated">
             📅 Last updated: {new Date(lastUpdated).toLocaleString('en-IN')}
           </p>
         )}
@@ -142,20 +139,18 @@ export default function MarketPrices() {
 
       {/* Loading State */}
       {isLoading && (
-        <div style={{ textAlign: 'center', padding: '3rem' }}>
-          <div className="spinner" style={{ width: '2.5rem', height: '2.5rem', margin: '0 auto 1rem' }}></div>
-          <p style={{ color: 'var(--color-textMuted)' }}>Fetching market prices from mandis...</p>
+        <div className="loading-center">
+          <div className="spinner spinner-lg"></div>
+          <p>Fetching market prices from mandis...</p>
         </div>
       )}
 
       {/* Price Table */}
       {!isLoading && prices.length > 0 && (
         <div className="fade-in">
-          <div className="card" style={{ marginBottom: '0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.05rem', fontWeight: 600 }}>
-                📋 {selectedCommodity} Prices in {selectedState}
-              </h3>
+          <div className="card">
+            <div className="market-results-header">
+              <h3>📋 {selectedCommodity} Prices in {selectedState}</h3>
               <span className="badge badge-accent">
                 {prices.length} {prices.length === 1 ? 'market' : 'markets'}
               </span>
@@ -172,10 +167,8 @@ export default function MarketPrices() {
       {!isLoading && prices.length === 0 && !lastUpdated && (
         <div className="card">
           <div className="empty-state">
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📊</div>
-            <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.1rem', marginBottom: '0.5rem' }}>
-              No market data loaded
-            </h3>
+            <div className="empty-state-icon">📊</div>
+            <h3 className="empty-state-title">No market data loaded</h3>
             <p>Select a state and commodity above to view live mandi prices</p>
           </div>
         </div>

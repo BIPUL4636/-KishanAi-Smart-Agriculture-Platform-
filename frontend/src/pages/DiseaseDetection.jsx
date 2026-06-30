@@ -65,20 +65,16 @@ export default function DiseaseDetection() {
       </div>
 
       {/* Upload Area */}
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.05rem', fontWeight: 600, marginBottom: '1.25rem' }}>
-          Upload Leaf Image
-        </h3>
+      <div className="card mb-lg">
+        <h3 className="card-section-title">Upload Leaf Image</h3>
         <LeafUpload onSubmit={handleSubmit} isLoading={isLoading} />
       </div>
 
       {/* Result Card */}
       {detResult && (
-        <div className="result-card fade-in" style={{ marginBottom: '1.5rem' }}>
-          <div className="result-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.05rem', fontWeight: 600 }}>
-              🎯 Detection Result
-            </h3>
+        <div className="result-card fade-in mb-lg">
+          <div className="result-card-header">
+            <h3>🎯 Detection Result</h3>
             {(() => {
               const severity = getSeverityColor(detResult.isHealthy, detResult.confidence);
               return (
@@ -90,29 +86,30 @@ export default function DiseaseDetection() {
           </div>
           <div className="result-card-body">
             {/* Disease Name */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-              <div style={{
-                width: '3.5rem', height: '3.5rem', borderRadius: '0.75rem',
-                background: detResult.isHealthy ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.75rem',
-              }}>
+            <div className="result-name-row">
+              <div
+                className="result-icon-box"
+                style={{
+                  background: detResult.isHealthy ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                }}
+              >
                 {detResult.isHealthy ? '✅' : '🦠'}
               </div>
               <div>
-                <h4 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.2rem', fontWeight: 700 }}>
+                <h4 className="result-name-title">
                   {detResult.diseaseName || 'Unknown'}
                 </h4>
-                <p style={{ fontSize: '0.82rem', color: 'var(--color-textMuted)' }}>
+                <p className="result-name-subtitle">
                   {detResult.isHealthy ? 'Your plant looks healthy!' : 'Disease detected in the leaf'}
                 </p>
               </div>
             </div>
 
             {/* Confidence */}
-            <div style={{ marginBottom: '1.25rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                <span style={{ fontSize: '0.82rem', fontWeight: 500 }}>Confidence</span>
-                <span style={{ fontSize: '0.82rem', fontWeight: 700 }}>{detResult.confidence || 0}%</span>
+            <div className="confidence-section">
+              <div className="confidence-labels">
+                <span className="confidence-label">Confidence</span>
+                <span className="confidence-value">{detResult.confidence || 0}%</span>
               </div>
               <div className="confidence-bar">
                 <div
@@ -129,26 +126,17 @@ export default function DiseaseDetection() {
 
             {/* Symptoms */}
             {detResult.symptoms && !detResult.isHealthy && (
-              <div style={{ marginBottom: '1rem' }}>
-                <h5 style={{ fontSize: '0.88rem', fontWeight: 600, marginBottom: '0.5rem' }}>📋 Symptoms</h5>
-                <p style={{ fontSize: '0.85rem', color: 'var(--color-textMuted)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
-                  {detResult.symptoms}
-                </p>
+              <div className="symptoms-box">
+                <h5>📋 Symptoms</h5>
+                <p>{detResult.symptoms}</p>
               </div>
             )}
 
             {/* Treatment */}
             {detResult.treatment && !detResult.isHealthy && (
-              <div style={{
-                padding: '1rem', background: 'rgba(34, 197, 94, 0.05)',
-                borderRadius: '0.625rem', borderLeft: '3px solid var(--color-success)',
-              }}>
-                <h5 style={{ fontSize: '0.88rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--color-success)' }}>
-                  💊 Treatment
-                </h5>
-                <p style={{ fontSize: '0.85rem', color: 'var(--color-textMuted)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
-                  {detResult.treatment}
-                </p>
+              <div className="treatment-box">
+                <h5>💊 Treatment</h5>
+                <p>{detResult.treatment}</p>
               </div>
             )}
           </div>
@@ -156,12 +144,10 @@ export default function DiseaseDetection() {
       )}
 
       {/* Detection History */}
-      <div className="card" style={{ marginTop: '2rem' }}>
-        <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.05rem', fontWeight: 600, marginBottom: '1rem' }}>
-          📋 Detection History
-        </h3>
+      <div className="card mt-xl">
+        <h3 className="card-section-title">📋 Detection History</h3>
         {history.length === 0 ? (
-          <div className="empty-state" style={{ padding: '2rem' }}>
+          <div className="empty-state">
             <p>No detections yet — upload a leaf photo above to get started</p>
           </div>
         ) : (
@@ -179,7 +165,7 @@ export default function DiseaseDetection() {
                 <tbody>
                   {history.map((det) => (
                     <tr key={det._id}>
-                      <td style={{ fontWeight: 600 }}>{det.result?.diseaseName || 'N/A'}</td>
+                      <td className="td-bold">{det.result?.diseaseName || 'N/A'}</td>
                       <td>
                         {det.result?.isHealthy ? (
                           <span className="badge badge-success">Healthy</span>
@@ -188,7 +174,7 @@ export default function DiseaseDetection() {
                         )}
                       </td>
                       <td>{det.result?.confidence || 0}%</td>
-                      <td style={{ fontSize: '0.82rem', color: 'var(--color-textMuted)' }}>
+                      <td className="td-muted">
                         {new Date(det.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>
                     </tr>
@@ -199,23 +185,21 @@ export default function DiseaseDetection() {
 
             {/* Pagination */}
             {historyTotal > 1 && (
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '1rem' }}>
+              <div className="pagination">
                 <button
-                  className="btn-secondary"
+                  className="btn-secondary btn-sm"
                   onClick={() => setHistoryPage((p) => Math.max(1, p - 1))}
                   disabled={historyPage <= 1}
-                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
                 >
                   ← Prev
                 </button>
-                <span style={{ fontSize: '0.82rem', color: 'var(--color-textMuted)', display: 'flex', alignItems: 'center' }}>
+                <span className="pagination-info">
                   Page {historyPage} of {historyTotal}
                 </span>
                 <button
-                  className="btn-secondary"
+                  className="btn-secondary btn-sm"
                   onClick={() => setHistoryPage((p) => Math.min(historyTotal, p + 1))}
                   disabled={historyPage >= historyTotal}
-                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
                 >
                   Next →
                 </button>

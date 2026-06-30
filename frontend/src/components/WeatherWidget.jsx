@@ -67,19 +67,17 @@ export default function WeatherWidget({ compact = false }) {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: compact ? '1.5rem' : '3rem' }}>
-        <div className="spinner" style={{ width: '1.5rem', height: '1.5rem' }}></div>
-        <span style={{ marginLeft: '0.75rem', color: 'var(--color-textMuted)', fontSize: '0.85rem' }}>
-          Fetching weather...
-        </span>
+      <div className="weather-loading">
+        <div className="spinner spinner-md"></div>
+        <span>Fetching weather...</span>
       </div>
     );
   }
 
   if (error || !weather) {
     return (
-      <div className="empty-state" style={{ padding: compact ? '1rem' : '2rem' }}>
-        <p style={{ fontSize: '0.85rem' }}>🌤️ {error || 'Weather data unavailable'}</p>
+      <div className="empty-state">
+        <p>🌤️ {error || 'Weather data unavailable'}</p>
       </div>
     );
   }
@@ -91,27 +89,27 @@ export default function WeatherWidget({ compact = false }) {
   if (compact) {
     return (
       <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <span style={{ fontSize: '2.5rem' }}>
+        <div className="weather-compact-main">
+          <span className="weather-compact-emoji">
             {getWeatherEmoji(current.icon)}
           </span>
           <div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 700, fontFamily: 'var(--font-heading)', lineHeight: 1 }}>
+            <div className="weather-compact-temp">
               {Math.round(current.temp || current.temperature || 0)}°C
             </div>
-            <div style={{ fontSize: '0.82rem', color: 'var(--color-textMuted)', marginTop: '0.2rem' }}>
+            <div className="weather-compact-desc">
               {current.description || current.condition || 'N/A'} • {current.city || current.name || 'Unknown'}
             </div>
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem', marginTop: '1rem' }}>
-          <div style={{ fontSize: '0.78rem', color: 'var(--color-textMuted)' }}>
+        <div className="weather-compact-details">
+          <div className="weather-compact-detail">
             💧 {current.humidity || 0}%
           </div>
-          <div style={{ fontSize: '0.78rem', color: 'var(--color-textMuted)' }}>
+          <div className="weather-compact-detail">
             💨 {current.windSpeed || current.wind_speed || 0} m/s
           </div>
-          <div style={{ fontSize: '0.78rem', color: 'var(--color-textMuted)' }}>
+          <div className="weather-compact-detail">
             🌡️ Feels {Math.round(current.feelsLike || current.feels_like || 0)}°C
           </div>
         </div>
@@ -123,17 +121,17 @@ export default function WeatherWidget({ compact = false }) {
   return (
     <div>
       {/* Current Weather */}
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
+      <div className="card mb-lg">
         <div className="weather-main">
-          <span style={{ fontSize: '4rem' }}>{getWeatherEmoji(current.icon)}</span>
+          <span className="weather-emoji-lg">{getWeatherEmoji(current.icon)}</span>
           <div>
             <div className="weather-temp">
               {Math.round(current.temp || current.temperature || 0)}°C
             </div>
-            <div style={{ color: 'var(--color-textMuted)', fontSize: '0.95rem', marginTop: '0.3rem', textTransform: 'capitalize' }}>
+            <div className="weather-desc">
               {current.description || current.condition || 'N/A'}
             </div>
-            <div style={{ color: 'var(--color-textMuted)', fontSize: '0.85rem', marginTop: '0.15rem' }}>
+            <div className="weather-location">
               📍 {current.city || current.name || 'Unknown'}
             </div>
           </div>
@@ -147,13 +145,10 @@ export default function WeatherWidget({ compact = false }) {
             { label: 'Wind Speed', value: `${current.windSpeed || current.wind_speed || 0} m/s`, icon: '💨' },
             { label: 'Pressure', value: `${current.pressure || 0} hPa`, icon: '📊' },
           ].map((d) => (
-            <div key={d.label} style={{
-              padding: '0.75rem', borderRadius: '0.75rem',
-              background: 'var(--color-bgMain)', textAlign: 'center',
-            }}>
-              <div style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>{d.icon}</div>
-              <div style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.15rem' }}>{d.value}</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--color-textMuted)' }}>{d.label}</div>
+            <div key={d.label} className="weather-detail-item">
+              <div className="weather-detail-icon">{d.icon}</div>
+              <div className="weather-detail-value">{d.value}</div>
+              <div className="weather-detail-label">{d.label}</div>
             </div>
           ))}
         </div>
@@ -162,22 +157,22 @@ export default function WeatherWidget({ compact = false }) {
       {/* 5-Day Forecast */}
       {forecast.length > 0 && (
         <div className="card">
-          <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>
+          <h3 className="card-section-title-flex">
             📅 5-Day Forecast
           </h3>
           <div className="weather-forecast">
             {forecast.slice(0, 5).map((day, i) => (
               <div key={i} className="forecast-day">
-                <div style={{ fontSize: '0.75rem', color: 'var(--color-textMuted)', marginBottom: '0.3rem' }}>
+                <div className="forecast-day-label">
                   {day.day || new Date(day.date || day.dt * 1000).toLocaleDateString('en', { weekday: 'short' })}
                 </div>
-                <div style={{ fontSize: '1.5rem', marginBottom: '0.3rem' }}>
+                <div className="forecast-day-emoji">
                   {getWeatherEmoji(day.icon)}
                 </div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+                <div className="forecast-day-high">
                   {Math.round(day.tempMax || day.temp_max || day.temp || 0)}°
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--color-textMuted)' }}>
+                <div className="forecast-day-low">
                   {Math.round(day.tempMin || day.temp_min || 0)}°
                 </div>
               </div>
@@ -188,11 +183,11 @@ export default function WeatherWidget({ compact = false }) {
 
       {/* Farming Advisory */}
       {weather.advisory && (
-        <div className="card" style={{ marginTop: '1.5rem', borderLeft: '4px solid var(--color-accent)' }}>
-          <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div className="card mt-lg advisory-card">
+          <h3 className="card-section-title-flex">
             🌾 Farming Advisory
           </h3>
-          <p style={{ color: 'var(--color-textMuted)', fontSize: '0.88rem', lineHeight: 1.6 }}>
+          <p className="advisory-tip">
             {weather.advisory}
           </p>
         </div>

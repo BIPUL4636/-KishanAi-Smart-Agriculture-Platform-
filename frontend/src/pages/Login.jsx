@@ -50,18 +50,16 @@ export default function Login() {
       {/* Left Hero Panel */}
       <div className="auth-hero">
         <div className="auth-hero-content">
-          <div className="text-6xl mb-6">🌾</div>
-          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem' }}>
-            <span style={{ background: 'linear-gradient(135deg, #41C0F2, #7dd3fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              KishanAi
-            </span>
+          <div className="auth-hero-emoji">🌾</div>
+          <h1 className="auth-hero-title">
+            <span className="gradient-text">KishanAi</span>
           </h1>
-          <p style={{ fontSize: '1.1rem', opacity: 0.7, maxWidth: '320px', margin: '0 auto', lineHeight: 1.6 }}>
+          <p className="auth-hero-desc">
             Smart Agriculture Platform for Indian Farmers — powered by AI
           </p>
-          <div style={{ marginTop: '2.5rem', display: 'flex', gap: '2rem', justifyContent: 'center' }}>
+          <div className="auth-hero-features">
             {['🌱 Crop AI', '🔬 Disease Detection', '🌤️ Weather'].map((item) => (
-              <span key={item} style={{ fontSize: '0.85rem', opacity: 0.5 }}>{item}</span>
+              <span key={item}>{item}</span>
             ))}
           </div>
         </div>
@@ -70,13 +68,9 @@ export default function Login() {
       {/* Right Form Panel */}
       <div className="auth-form-side">
         <div className="auth-form-container fade-in">
-          <div style={{ marginBottom: '2rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-              Welcome back 👋
-            </h2>
-            <p className="text-textMuted">
-              Log in to access your smart farming dashboard
-            </p>
+          <div className="auth-form-heading">
+            <h2>Welcome back 👋</h2>
+            <p>Log in to access your smart farming dashboard</p>
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -113,13 +107,12 @@ export default function Login() {
             {/* Submit */}
             <button
               type="submit"
-              className="btn-primary"
+              className="btn-primary btn-full mt-sm"
               disabled={isSubmitting}
-              style={{ width: '100%', marginTop: '0.5rem', padding: '0.85rem' }}
             >
               {isSubmitting ? (
                 <>
-                  <div className="spinner" style={{ width: '1.1rem', height: '1.1rem', borderWidth: '2px' }}></div>
+                  <div className="spinner spinner-btn"></div>
                   Logging in...
                 </>
               ) : (
@@ -129,11 +122,9 @@ export default function Login() {
           </form>
 
           {/* Register Link */}
-          <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', color: 'var(--color-textMuted)' }}>
+          <p className="auth-link-row">
             Don't have an account?{' '}
-            <Link to="/register" style={{ color: 'var(--color-kisanBlue)', fontWeight: 600, textDecoration: 'none' }}>
-              Sign up free
-            </Link>
+            <Link to="/register">Sign up free</Link>
           </p>
         </div>
       </div>
